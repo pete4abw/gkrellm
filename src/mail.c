@@ -2994,7 +2994,6 @@ save_mail_config(FILE *f)
 	MailAccount	*account;
 	Mailproc	*mp		= (Mailproc*) mail_fetch->private;
 	GList		*list;
-	gchar		*pwd, *qq;
 
 	for (list = mailbox_list; list; list = list->next)
 		{
@@ -3011,20 +3010,16 @@ save_mail_config(FILE *f)
 							account->homedir_path : account->path);
 				break;
 			case MBOX_REMOTE:
-				pwd = account->password;
-				if ((qq = strchr(pwd, '"')) != NULL)
-					pwd = "password";
-				fprintf(f, "mail mailbox-remote %s %s \"%s\" \"%s\" %d",
+				fprintf(f, "mail mailbox-remote %s %s %s %s %d",
 					auth_string(account->protocol,
 						    account->authmech),
 					account->server, account->username,
-					account->password, account->port);
+					account->password, account->port); // let space be delimeter
 				if (account->protocol == PROTO_IMAP)
-					fprintf(f, " \"%s\"",
+					fprintf(f, " %s",
 						account->imapfolder);
 				fprintf(f, "\n");
-				if (qq)
-					fprintf(f, "mail password %s\n", account->password);
+				fprintf(f, "mail password %s\n", account->password);
 #ifdef HAVE_SSL
 				fprintf(f, "mail mailbox-remote-use-ssl %d\n",
 							account->use_ssl);
